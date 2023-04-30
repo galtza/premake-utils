@@ -36,3 +36,4 @@ function exclude_folders_from_dropbox(_folders)
         pipe:close()
     end
 end
+
