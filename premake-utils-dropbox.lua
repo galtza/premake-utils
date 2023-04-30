@@ -7,15 +7,6 @@
 -- =========================================================
 -- Prevent Dropbox from synchronising some files and folders
 -- =========================================================
---
-function remove_leading_space(_text)
-    local lines = {}
-    for line in _text:gmatch("[^\n]+") do
-        local cleanedLine = line:gsub("^%s*", "")
-        table.insert(lines, cleanedLine)
-    end
-    return table.concat(lines, "\n")
-end
 
 function exclude_folders_from_dropbox(_folders)
     local script = ""
@@ -23,10 +14,10 @@ function exclude_folders_from_dropbox(_folders)
     if os.target() == "windows" then
         for _, folder in ipairs(_folders) do
             print(string.format("[] Excluding \"%s\" from Dropbox sync...", folder))
-            script = script .. remove_leading_space(string.format([[
+            script = script .. string.format([[
                 New-Item %s -type directory -force | Out-Null
                 Set-Content -Path '%s' -Stream com.dropbox.ignored -Value 1 | Out-Null
-            ]], folder, folder))
+            ]], folder, folder)
 
         end
 
@@ -38,12 +29,11 @@ function exclude_folders_from_dropbox(_folders)
     elseif os.target() == "macosx" then
         for _, folder in ipairs(_folders) do
             print(string.format("[] Excluding \"%s\" from Dropbox sync...", folder))
-            script = script .. remove_leading_space(string.format([[
+            script = script .. string.format([[
                 mkdir -p "%s"
                 xattr -w com.dropbox.ignored 1 "%s"
-            ]], folder, folder))
+            ]], folder, folder)
         end
-        script = remove_leading_space(script)
 
         -- Run the script
         local pipe = io.popen("bash", "w")
@@ -59,11 +49,11 @@ function exclude_files_from_dropbox(_files)
     if os.target() == "windows" then
         for _, file in ipairs(_files) do
             print(string.format("[] Excluding \"%s\" from Dropbox sync...", file))
-            script = script .. remove_leading_space(string.format([[
+            script = script .. string.format([[
                 if (Test-Path "%s" -PathType Leaf) {
-                    Set-Content -Path "%s" -Stream com.dropbox.ignored -Value 1
+                    Set-Content -Path "%s" -Stream com.dropbox.ignored -Value 1 | Out-Null
                 }
-            ]], file, file))
+            ]], file, file)
         end
 
         -- Feed the script to powershell process stdin
@@ -74,11 +64,11 @@ function exclude_files_from_dropbox(_files)
     elseif os.target() == "macosx" then
         for _, file in ipairs(_files) do
             print(string.format("[] Excluding \"%s\" from Dropbox sync...", file))
-            script = script .. remove_leading_space(string.format([[
+            script = script .. string.format([[
                 if [ -f "%s" ]; then
                     xattr -w com.dropbox.ignored 1 "%s"
                 fi
-            ]], file, file))
+            ]], file, file)
         end
 
         -- Run the script
