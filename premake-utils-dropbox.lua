@@ -4,9 +4,9 @@
     See the LICENSE file in the project root for more information.
 --]]
 
--- ====================================================
--- Prevent Dropbox from synchronising specified folders
--- ====================================================
+-- ==========================================
+-- Prevent Dropbox from synchronising folders
+-- ==========================================
 
 function exclude_folders_from_dropbox(_folders)
     local script = ""
